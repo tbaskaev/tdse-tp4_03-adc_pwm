@@ -95,7 +95,7 @@ HAL_StatusTypeDef ADC_Poll_Read(uint16_t *value) {
 
 	res=HAL_ADC_Start(&hadc1);
 	if ( HAL_OK==res ) {
-		res=HAL_ADC_PollForConversion(&hadc1, 0);
+		res=HAL_ADC_PollForConversion(&hadc1, 10); //cambio 0 a 10
 		if ( HAL_OK==res ) {
 			*value = HAL_ADC_GetValue(&hadc1);
 		}

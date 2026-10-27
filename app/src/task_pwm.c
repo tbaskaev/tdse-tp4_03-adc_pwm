@@ -74,10 +74,13 @@ void task_pwm_init(void *parameters)
 	shared_data_type *shared_data = (shared_data_type *) parameters;
 
 	shared_data->pwm_active = 0;
+
+	HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
 	/* Print out: Task Initialized */
 	LOGGER_LOG("  %s is running - %s\r\n", GET_NAME(task_pwm_init), p_task_pwm);
 }
 
+/*
 void task_pwm_update(void *parameters)
 {
 
@@ -100,6 +103,23 @@ void task_pwm_update(void *parameters)
 			}
 		}
 		shared_data->pwm_active = shared_data->pwm_active + step;
+	}
+}
+*/
+
+void task_pwm_update(void *parameters)
+{
+	shared_data_type *shared_data = (shared_data_type *) parameters;
+
+	/* 2. Si el ADC terminó una lectura, actualizamos el ancho de pulso */
+	if (shared_data->adc_end_of_conversion) {
+		shared_data->adc_end_of_conversion = false;
+
+		/* Mapeo directo: asignamos la lectura del ADC (0 a 4095) al PWM */
+		shared_data->pwm_active = shared_data->adc_value;
+
+		/* Actualizamos el registro de comparación del Timer para cambiar el brillo del LED */
+		__HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, shared_data->pwm_active);
 	}
 }
 
